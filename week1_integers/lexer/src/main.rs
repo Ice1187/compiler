@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use Struct::Token;
+use struct_lib::Token;
 
 // Int match part
 fn int_match(text: &mut String) -> Token::Token {
@@ -20,7 +20,7 @@ fn int_match(text: &mut String) -> Token::Token {
             // let int_start = int.start();
             let int_end = int.end();
             int_str = int.as_str().to_string();
-            token._type = "NUMBER".to_string();
+            token._type = "CONSTANT".to_string();
             token._value = int_str.clone();
             // println!("Int Match: {}", int_str);
             text.replace_range(..int_end, "");

@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use Struct::Token;
+use struct_lib::Token;
 
 // Int match part
 fn int_match(text: &mut String) -> Token::Token {
@@ -20,7 +20,7 @@ fn int_match(text: &mut String) -> Token::Token {
             // let int_start = int.start();
             let int_end = int.end();
             int_str = int.as_str().to_string();
-            token._type = "NUMBER".to_string();
+            token._type = "CONSTANT".to_string();
             token._value = int_str.clone();
             // println!("Int Match: {}", int_str);
             text.replace_range(..int_end, "");
@@ -118,8 +118,10 @@ fn keysyb_match(word: &str) -> &str {
 
 
 pub fn lex(filename: &str) -> Vec<Token::Token> {
-	// let filename = String::from("../return_2.c");		
-	let file = File::open(&filename).expect("Failed to open the file");
+	// let filename = String::from("../return_2.c");
+    println!("Lexer:");
+    println!("File path: {}", &filename);
+	let file = File::open(&filename).expect("\nLexer: Failed to open the file\n");
 	let reader = BufReader::new(file);
 	println!("----------------");
 	println!("[-] File: {}\n", &filename);

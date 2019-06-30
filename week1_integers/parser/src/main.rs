@@ -1,6 +1,6 @@
 use std::io::{stdout, Write};
-use Struct::Token;
-use Struct::Node;
+use struct_lib::Token;
+use struct_lib::Node;
 use lexer_lib;
 
 fn set_token(token_vec: &mut Vec<Token::Token>) {
@@ -29,11 +29,23 @@ fn set_token(token_vec: &mut Vec<Token::Token>) {
 		_value: "return".to_string(),
 	} );
 	token_vec.push(Token::Token {
-		_type:  "NUMBER".to_string(),
+		_type:  "CONSTANT".to_string(),
 		_value: "2".to_string(),
 	} );
 	token_vec.push(Token::Token {
-		_type:  "SEMICOLEN".to_string(),
+		_type:  "SEMICOLON".to_string(),
+		_value: ";".to_string(),
+	} );
+	token_vec.push(Token::Token {
+		_type:  "RETURN_KEYWORD".to_string(),
+		_value: "return".to_string(),
+	} );
+	token_vec.push(Token::Token {
+		_type:  "CONSTANT".to_string(),
+		_value: "3".to_string(),
+	} );
+	token_vec.push(Token::Token {
+		_type:  "SEMICOLON".to_string(),
 		_value: ";".to_string(),
 	} );
 	token_vec.push(Token::Token {
@@ -59,27 +71,34 @@ fn print_ast(ast: & Vec<Node::Node>) {
 	println!{"\n[-] AST: "};
 	for i in 0..c {
 		if ast[i]._level == "Program".to_string() {
-	    	println!("{}: {}", ast[i]._level, ast[i]._name);
+	    	// println!("{}: {}", ast[i]._level, ast[i]._name);
+	    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
 		} else if ast[i]._level == "Function".to_string() {
 			 print!("  ");
-	    	println!("{}: {} {}", ast[i]._level, ast[i]._type, ast[i]._name);
+	    	// println!("{}: {} {}", ast[i]._level, ast[i]._type, ast[i]._name);
+	    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
 		} else if ast[i]._level == "Statement".to_string() {
 			 print!("    ");
-	    	println!("{}: {} {}", ast[i]._level, ast[i]._type, ast[i]._name);
+	    	// println!("{}: {} {}", ast[i]._level, ast[i]._type, ast[i]._name);
+	    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
 		} else if ast[i]._level == "Expression".to_string() {
 			 print!("      ");
-	    	println!("{}: {} {}", ast[i]._level, ast[i]._type, ast[i]._value);
+	    	// println!("{}: {} {}", ast[i]._level, ast[i]._type, ast[i]._value);
+	    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
 		} else { println!("No Expression?");}
     }	
 }
 
 fn main() {
 	// let filename_vec = vec!["missing_paren.c", "missing_retval.c", "no_brace.c", "no_semicolon.c", "no_space.c", "wrong_case.c"];
-	let filename_vec = vec!["multi_digit.c", "newlines.c", "no_newlines.c", "return_0.c", "return_2.c", "spaces.c"];
-	for filename in filename_vec {
-		let filename = "../../test/stage_1/valid/".to_owned() + filename;
+	// let filename_vec = vec!["multi_digit.c", "newlines.c", "no_newlines.c", "return_0.c", "return_2.c", "spaces.c"];
+	// for filename in filename_vec {
+		// let filename = "../../test/stage_1/valid/".to_owned() + filename;
 
-		let mut token_vec = lexer_lib::lex(&filename);
+		// let mut token_vec = lexer_lib::lex(&filename);
+
+		let mut token_vec: Vec<Token::Token> = Vec::new();
+		set_token(&mut token_vec);
 		print_token(&token_vec);
 
 		// first node of AST
@@ -89,7 +108,7 @@ fn main() {
 		println!("\n[+] Finish parsing. Well done!");
 
 		print_ast(&ast);
-	}
+	// }
 }
 
 
@@ -116,9 +135,7 @@ fn function(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>
 	let ast_len = ast.len();
 	if ast_len == 0 { panic!("Unable to set AST at program level."); }
 
-	// loop count for test
-	let mut c = 1;
-	while token_vec.len()!= 0 && c > 0 {
+	loop {
 		
 		// push ast node
 		ast.push(Node::new());
@@ -164,15 +181,13 @@ fn function(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>
 		// set Function node's }
 		if token_vec[0]._type == "CLOSE_BRACE" { 
 			token_vec.remove(0);
-		} else { panic!("Function } was wrong."); }
-
-		c -= 1;
+			break;
+		} else { panic!("Function }} was wrong.\n Function }}: {} {}", token_vec[0]._type, token_vec[0]._value); }
 	}
 }
 
 // level type name
 fn statement(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>) {
-	let mut c = 1;
 	let ast_len = ast.len();
 
 	// push ast node
@@ -185,7 +200,7 @@ fn statement(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node
 	ast[ast_len]._level = String::from("Statement");
 
 	// set Statement node's type
-	while token_vec[0]._type != "CLOSE_BRACE" && c > 0 {
+	while token_vec[0]._type != "CLOSE_BRACE" {
 		if token_vec[0]._type == "RETURN_KEYWORD" {
 			ast[ast_len]._type = String::from(token_vec[0]._type.clone());
 			ast[ast_len]._name = String::from(token_vec[0]._value.clone());
@@ -198,7 +213,6 @@ fn statement(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node
 		if token_vec[0]._type == "SEMICOLON" {
 			token_vec.remove(0);
 		} else { panic!("Statement end was wrong. \n Statement end: {} {}", token_vec[0]._type, token_vec[0]._value);		}
-		c -= 1;
 	}
 }
 
@@ -215,7 +229,7 @@ fn exp(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>) {
 	// set Expression node's level
 	ast[ast_len]._level = String::from("Expression");
 
-	if token_vec[0]._type == "NUMBER" {
+	if token_vec[0]._type == "CONSTANT" {
 		ast[ast_len]._type = String::from(token_vec[0]._type.clone());
 		ast[ast_len]._value = String::from(token_vec[0]._value.clone());
 		token_vec.remove(0);
