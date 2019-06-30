@@ -152,38 +152,23 @@ pub fn print_ast(ast: & Vec<Node::Node>, verbose: i32) {
 	}
 }
 
-pub fn parse(filename: &str, prefix: &str) -> Vec<Node::Node> {
-	// let filename_vec = vec!["missing_paren.c", "missing_retval.c", "no_brace.c", "no_semicolon.c", "no_space.c", "wrong_case.c"];
-	// let filename_vec = vec!["multi_digit.c", "newlines.c", "no_newlines.c", "return_0.c", "return_2.c", "spaces.c"];
-	// for filename in filename_vec {
-		// let filename = "../../test/stage_1/valid/".to_owned() + filename;
-		let path = prefix.to_owned() + &filename.to_owned();
-		let mut token_vec = lexer_lib::lex(&path);
+pub fn parse(path: & String, filename: & String) -> Vec<Node::Node> {
+	let mut token_vec = lexer_lib::lex(&path);
 
-		// let mut token_vec: Vec<Token::Token> = Vec::new();
-		// set_token(&mut token_vec);
-		println!("Parser:");
-		print_token(&token_vec);
-		println!("----------------");
+	// println!("Parser:");
+	// print_token(&token_vec);
+	// println!("----------------");
 
-		// first node of AST
-		let mut ast: Vec<Node::Node> = Vec::new();
-		println!("\n[+] Start parsing.\n");
-		program(&mut token_vec,&mut ast, filename.to_string());
-		println!("\n[+] Finish parsing. Well done!");
+	// first node of AST
+	let mut ast: Vec<Node::Node> = Vec::new();
+	// println!("\n[+] Start parsing.\n");
+	program(&mut token_vec,&mut ast, path.clone());
+	// println!("\n[+] Finish parsing.");
 
-		// print_ast(&ast);
-		ast
-	// }
+	ast
 }
 
 
-// level ::= <upper>{<lower>}
-// type  ::= <upper>{<upper>}
-// name  ::= [a-zA-Z] 
-
-
-// level type name
 fn program(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>, filename: String) {
 	ast.push(Node::new());
 	ast[0]._level = String::from("Program"); 
@@ -191,14 +176,14 @@ fn program(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>,
 	ast[0]._name  = String::from(filename); 
 
 	// print to test
-	println!("{}: {}", &ast[0]._level, &ast[0]._name);
+	// println!("{}: {}", &ast[0]._level, &ast[0]._name);
 	
 	while token_vec.len() != 0 {
 		function(&mut token_vec, &mut ast, 0);
 	}
 }
 
-// level type name value
+
 fn function(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>, root: usize) {
 	if ast.len() == 0 { panic!("Unable to set AST at program level."); }
 	loop {
@@ -241,7 +226,7 @@ fn function(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>
 		} else { panic!("Function { was wrong."); }
 
 		// print to test
-		println!("  {}: {} {}", ast[ast_len]._level, ast[ast_len]._type, ast[ast_len]._name);
+		// println!("  {}: {} {}", ast[ast_len]._level, ast[ast_len]._type, ast[ast_len]._name);
 
 		statement(&mut token_vec, &mut ast, ast_len);
 
@@ -253,7 +238,7 @@ fn function(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>
 	}
 }
 
-// level type name
+
 fn statement(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>, root: usize) {
 	// set Statement node's type
 	while token_vec[0]._type != "CLOSE_BRACE" {
@@ -270,7 +255,7 @@ fn statement(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node
 			ast[ast_len]._name = String::from(token_vec[0]._value.clone());
 			token_vec.remove(0);
 
-			println!("    {}: {} {}", ast[ast_len]._level, ast[ast_len]._type, ast[ast_len]._name);
+			// println!("    {}: {} {}", ast[ast_len]._level, ast[ast_len]._type, ast[ast_len]._name);
 
 			exp(&mut token_vec, &mut ast, ast_len)
 
@@ -300,7 +285,8 @@ fn exp(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize
 		token_vec.remove(0);
 	} else { panic!("Expression type was wrong. \n Expression type: {} {}", token_vec[0]._type, token_vec[0]._value); }
 
-	println!("      {}: {} {}", ast[ast_len]._level, ast[ast_len]._type, ast[ast_len]._value);
+	// print to test
+	// println!("      {}: {} {}", ast[ast_len]._level, ast[ast_len]._type, ast[ast_len]._value);
 
 }
 

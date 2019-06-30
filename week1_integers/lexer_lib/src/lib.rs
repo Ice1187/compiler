@@ -117,23 +117,24 @@ fn keysyb_match(word: &str) -> &str {
 
 
 
-pub fn lex(filename: &str) -> Vec<Token::Token> {
-	// let filename = String::from("../return_2.c");
-    println!("Lexer:");
-    println!("File path: {}", &filename);
-	let file = File::open(&filename).expect("\nLexer: Failed to open the file\n");
+pub fn lex(path: &str) -> Vec<Token::Token> {
+    // println!("Lexer:");
+    // println!("File path: {}", &path);
+	
+    let file = File::open(&path).expect("\nLexer: Failed to open the file\n");
 	let reader = BufReader::new(file);
-	println!("----------------");
-	println!("[-] File: {}\n", &filename);
+	
+    // println!("----------------");
+	// println!("[-] File: {}\n", &path);
+    
     let mut token_vec = Vec::new();
     for line in reader.lines(){
 		let mut text = line.unwrap().trim().to_string();
-    	println!("New Line: \n\"{}\"\n", text);
+    	// println!("New Line: \n\"{}\"\n", text);
 
 	    let mut first: char;
         let mut token: Token::Token;
 	    while text.len()!=0 {
-	        // println!("{:?}", &text);
 
 	        first = text.chars().nth(0).unwrap();
 	        if first.is_ascii_digit() {
@@ -153,24 +154,6 @@ pub fn lex(filename: &str) -> Vec<Token::Token> {
 	        }
             text = text.trim_start().to_string();
 	    }
-    // println!("\n");
-    // println!("Token vec ");
-    // for i in 0..token_vec.len() {
-    //     println!("type: {}", &token_vec[i]._type);
-    //     println!("value: {}", &token_vec[i]._value);
-    // }
-
-    // print to test
-//       let c = token_vec.len();
-//       print!("Token: [");
-	// stdout().flush().unwrap();
-//       for i in 0..c {
-//       	print!("\"{}: {}\", ", token_vec[i]._type, token_vec[i]._value);
-	// 	stdout().flush().unwrap();
-//       }
-//       print!("]\n");
-	// stdout().flush().unwrap();
-	// println!("--------\n");
 	}
 	token_vec
 }
