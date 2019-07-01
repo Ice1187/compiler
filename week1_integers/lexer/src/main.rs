@@ -1,9 +1,10 @@
 use regex::Regex;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use struct_lib::Token;
 
 // Int match part
-fn int_match(text: &mut String) -> String {
+fn int_match(text: &mut String) -> Token::Token {
     // <dec int> ::= <number>{<number>}
     // <number> ::= 0|1|2|3|4|5|6|7|8|9
     // Regex for constant integers
@@ -11,13 +12,16 @@ fn int_match(text: &mut String) -> String {
 
     let int_cap = int_re.captures(&text);
     let int;
-    let mut int_str = String::new();
+    let mut token = Token::new();
+    let mut int_str: String;
     match int_cap {
         Some(int_cap) => {
             int = int_cap.get(1).unwrap();
             // let int_start = int.start();
             let int_end = int.end();
             int_str = int.as_str().to_string();
+            token._type = "CONSTANT".to_string();
+            token._value = int_str.clone();
             // println!("Int Match: {}", int_str);
             text.replace_range(..int_end, "");
             // println!("Int Start: {}", int_start);
@@ -25,12 +29,12 @@ fn int_match(text: &mut String) -> String {
         },
         None => println!("int None"),
     };
-    int_str
+    token
 }
 
 
 // Word match part
-fn word_match(text: &mut String) -> String {
+fn word_match(text: &mut String) -> Token::Token {
     // <word> :: = <alpha_underscore>{<alpha>|"_"|<number>}
     // <alpha_underscore> ::= <alpha>|"_"
     // <alpha> ::= a-zA-Z{a-zA-Z}
@@ -39,13 +43,16 @@ fn word_match(text: &mut String) -> String {
 
     let word_cap = word_re.captures(&text);
     let word;
-    let mut word_str = String::new();
+    let mut token = Token::new();
+    let mut word_str: String;
     match word_cap {
         Some(word_cap) => {
             word = word_cap.get(1).unwrap();
             // let word_start = word.start();
             let word_end = word.end();
+            token._value = word.as_str().to_string();
             word_str = keyword_match(word.as_str()).to_string();
+            token._type = word_str.clone();
             // println!("WordMatch: {}", word_str);
   			text.replace_range(..word_end, "");
             // end = word_end;
@@ -54,24 +61,27 @@ fn word_match(text: &mut String) -> String {
         },
         None => println!("word None"),
     };
-    word_str
+    token
 }
 
 
 // Symbol match part
-fn symbol_match(text: &mut String) -> String {
+fn symbol_match(text: &mut String) -> Token::Token {
     // <symbol> ::= "("|")"|"{"|"}"|";"
     let syb_re = Regex::new(r"(^[\(\)\{\};])").unwrap();
 
     let syb_cap = syb_re.captures(&text);
     let syb;
-    let mut syb_str = String::new();
+    let mut token = Token::new();
+    let mut syb_str: String;
     match syb_cap {
     	Some(syb_cap) => {
     		syb = syb_cap.get(1).unwrap();
     		// let syb_start = syb.start();
     		let syb_end = syb.end();
+            token._value = syb.as_str().to_string();
     		syb_str = keysyb_match(syb.as_str()).to_string();
+            token._type = syb_str.clone();
     		// println!("Syb Match: {}", syb_str);
     		text.replace_range(..syb_end, "");
     		// println!("Syb Start: {}", syb_start);
@@ -79,7 +89,7 @@ fn symbol_match(text: &mut String) -> String {
     	},
     	None => println!("Syb None"),
     };
-    syb_str
+    token
 }
 
 
@@ -125,22 +135,22 @@ fn main() {
 	    	println!("\nNew Line: \n\"{}\"\n", text);
 
 		    let mut first: char;
-            let mut token;
+            let mut token: Token::Token;
 		    while text.len()!=0 {
 		        // println!("{:?}", &text);
 
 		        first = text.chars().nth(0).unwrap();
 		        if first.is_ascii_digit() {
 		        	token = int_match(&mut text);
-                    println!("Int token: {}", &token);
+                    println!("Int token: {}, {}", &token._type, &token._value);
                     token_vec.push(token);
 		        } else if first.is_ascii_alphabetic() {
 		        	token = word_match(&mut text);
-                    println!("Word token: {}", token);
+                    println!("Word token: {}, {}", &token._type, &token._value);
                     token_vec.push(token);
 		        } else if first.is_ascii_punctuation() {
 		        	token = symbol_match(&mut text);
-                    println!("Syb token: {}", token);
+                    println!("Syb token: {}, {}", &token._type, &token._value);
                     token_vec.push(token);
 		        } else {
 		        	panic!("Invalid char: {}", first);
@@ -149,7 +159,11 @@ fn main() {
 		    }
 	    }
         println!("\n");
-        println!("Token vec: {:?}", token_vec);
+        println!("Token vec ");
+        for i in 0..token_vec.len() {
+            println!("type: {}", &token_vec[i]._type);
+            println!("value: {}", &token_vec[i]._value);
+        }
 		println!("--------\n");
 	}
 }

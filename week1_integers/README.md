@@ -22,7 +22,7 @@ At week 1 here, the lexer should be able to following things. Any other input sh
 
 Write a parser that can transform the tokens generated from the lexer into an AST.
 
-At week 1 here, the pasrer should correctly build the ASTs for all the valid examples, and raise an error when encountering invalid examples in stage 1.
+At week 1 here, the parser should correctly build the ASTs for all the valid examples, and raise an error when encountering invalid examples in stage 1.
 
 - program = Program(function_declaration)
 - function_declaration = Function(string, statement) //string is the function name
