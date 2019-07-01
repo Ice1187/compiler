@@ -17,9 +17,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "lexer_lib"
 version = "0.1.0"
 dependencies = [
+ "lib 0.1.0",
  "regex 1.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "struct_lib 0.1.0",
 ]
+
+[[package]]
+name = "lib"
+version = "0.1.0"
 
 [[package]]
 name = "memchr"
@@ -45,10 +49,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "ucd-util 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "struct_lib"
-version = "0.1.0"
 
 [[package]]
 name = "thread_local"

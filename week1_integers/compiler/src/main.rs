@@ -8,14 +8,14 @@ fn get_filename() -> (String, String) {
 	let mut path = String::new();
 	let mut filename: String;
 	let mut args = env::args_os();
-	println!("args len: {:?}", args.len());
+	// println!("args len: {:?}", args.len());
 	if args.len() > 1 { 
-		path = args.nth(1).expect("Invalid arg[1]").into_string().expect("Invalid arg[1]").clone();
-		println!("arg[1]: {}\nUse arg[1] as file.", path)
+		path = args.nth(1).expect("Compiler: Invalid arg[1]").into_string().expect("Compiler: Invalid arg[1]").clone();
+		// println!("arg[1]: {}\nUse arg[1] as file.", path)
 	} else {	
 		print!("File name: ");
 		stdout().flush().unwrap();
-		stdin().read_line(&mut path).unwrap();
+		stdin().read_line(&mut path).expect("Compiler: Invalid file name.");
 	}
 
 	path = path.trim().to_string();
@@ -33,7 +33,7 @@ fn gcc(filename: & String) {
     .arg("-o")
     .arg(&out)
     .status().unwrap();
-    println!("{}", s);
+    // println!("{}", s);
 }
 
 

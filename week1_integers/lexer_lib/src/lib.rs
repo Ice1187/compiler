@@ -1,15 +1,14 @@
 use regex::Regex;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use struct_lib::Token;
+use lib::Token;
 
 // Int match part
-fn int_match(text: &mut String) -> Token::Token {
     // <dec int> ::= <number>{<number>}
     // <number> ::= 0|1|2|3|4|5|6|7|8|9
     // Regex for constant integers
+fn int_match(text: &mut String) -> Token::Token {
     let int_re = Regex::new(r"(^[0-9][0-9]*)\b").unwrap();
-
     let int_cap = int_re.captures(&text);
     let int;
     let mut token = Token::new();
@@ -27,18 +26,18 @@ fn int_match(text: &mut String) -> Token::Token {
             // println!("Int Start: {}", int_start);
             // println!("Int   End: {}", int_end);
         },
-        None => println!("int None"),
+        None => panic!("Lexer: int None"),
     };
     token
 }
 
 
 // Word match part
-fn word_match(text: &mut String) -> Token::Token {
     // <word> :: = <alpha_underscore>{<alpha>|"_"|<number>}
     // <alpha_underscore> ::= <alpha>|"_"
     // <alpha> ::= a-zA-Z{a-zA-Z}
     // Regex for keyword, variable name + symbols 
+fn word_match(text: &mut String) -> Token::Token {
 	let word_re = Regex::new(r"([a-zA-Z_][a-zA-Z_0-9]*)\b").unwrap();
 
     let word_cap = word_re.captures(&text);
@@ -59,15 +58,15 @@ fn word_match(text: &mut String) -> Token::Token {
             // println!("Word Start: {}", word_start);
             // println!("Word   End: {}", word_end);
         },
-        None => println!("word None"),
+        None => panic!("Lexer: word None"),
     };
     token
 }
 
 
 // Symbol match part
-fn symbol_match(text: &mut String) -> Token::Token {
     // <symbol> ::= "("|")"|"{"|"}"|";"
+fn symbol_match(text: &mut String) -> Token::Token {
     let syb_re = Regex::new(r"(^[\(\)\{\};])").unwrap();
 
     let syb_cap = syb_re.captures(&text);
@@ -87,7 +86,7 @@ fn symbol_match(text: &mut String) -> Token::Token {
     		// println!("Syb Start: {}", syb_start);
     		// println!("Syb   End: {}", syb_end);
     	},
-    	None => println!("Syb None"),
+    	None => panic!("Lexer: Syb None"),
     };
     token
 }
@@ -110,11 +109,9 @@ fn keysyb_match(word: &str) -> &str {
         "{" => "OPEN_BRACE",
         "}" => "CLOSE_BRACE",
         ";" => "SEMICOLON",
-        _ => panic!("Unrecognize symbol"),
+        _ => panic!("Lexer: Unrecognize symbol"),
     }
 }
-
-
 
 
 pub fn lex(path: &str) -> Vec<Token::Token> {
@@ -150,7 +147,7 @@ pub fn lex(path: &str) -> Vec<Token::Token> {
                 // println!("Syb token: {}, {}", &token._type, &token._value);
                 token_vec.push(token);
 	        } else {
-	        	// panic!("Invalid char: {}", first);
+	        	panic!("Lexer: Invalid char: {}", first);
 	        }
             text = text.trim_start().to_string();
 	    }
