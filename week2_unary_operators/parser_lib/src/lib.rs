@@ -1,14 +1,14 @@
 use lib::{Token, Node, Pprint};
 
 
-pub fn parse(token_vec: Vec<Token::Token>, filename: & String) -> Vec<Node::Node> {
-    println!("");
-    println!("----------------");
-    println!("[+] Parser:");
+pub fn parse(token_vec: Vec<Token::Token>, filename: &str) -> Vec<Node::Node> {
+    // println!("");
+    // println!("----------------");
+    // println!("[+] Parser:");
 	
     // Get the token vector
 	let mut token_vec = token_vec;
-	Pprint::print_token(&token_vec);
+	// Pprint::print_token(&token_vec);
 
 	// Build AST
 	let mut ast: Vec<Node::Node> = Vec::new();
@@ -20,12 +20,12 @@ pub fn parse(token_vec: Vec<Token::Token>, filename: & String) -> Vec<Node::Node
 }
 
 
-fn program(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>, filename: & String) {
+fn program(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>, filename: &str) {
 	// first node of AST
 	ast.push(Node::new());
 	ast[0]._level = String::from("Program"); 
 	ast[0]._type  = String::from("FILE");
-	ast[0]._name  = String::from(filename.clone()); 
+	ast[0]._name  = String::from(filename); 
 	if ast.len() == 0 { panic!("Parser: Unable to create AST."); }
 
 	while token_vec.len() != 0 {
@@ -113,11 +113,11 @@ fn Return(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>, 
 	ast[id]._type = String::from(token_vec[0]._type.clone());
 	ast[id]._name = String::from(token_vec[0]._value.clone());
 	token_vec.remove(0);
-	exp(&mut token_vec, &mut ast, root)
+	expression(&mut token_vec, &mut ast, root)
 }
 
 //
-fn exp(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
+fn expression(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>, root: usize) {
 	let id = ast.len();
 
 	// push ast node
@@ -128,61 +128,63 @@ fn exp(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize
 
 	// set Expression node's level
 	ast[id]._level = String::from("Expression");
-
-	match token_vec[0]._type.as_str() {
-		"CONSTANT" => Constant(&mut token_vec, &mut ast, id),
-		"NEGATION" | "BIT_COMPLE" | "LOGIC_NEG" => exp_unary_op(&mut token_vec, &mut ast, id),
+	
+	ast[id]._type = String::from(token_vec[0]._type.clone());
+	ast[id]._value = String::from(token_vec[0]._value.clone());
+	token_vec.remove(0);
+	match ast[id]._type.as_str() {
+		"NEGATION" | "BIT_COMPLE" | "LOGIC_NEG" => expression(&mut token_vec, &mut ast, id),
+		"CONSTANT" => (),
 		_ => panic!("Parser: Expression type was wrong. \n Expression type: {} {}", token_vec[0]._type, token_vec[0]._value),
 	}
 }
 
 
-fn exp_unary_op(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
-	let _type = token_vec[0]._type.clone();
-	token_vec.remove(0);
+// fn expression_unary_op(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
+// 	let _type = token_vec[0]._type.clone();
+// 	token_vec.remove(0);
 
-	[How to do this recursively]
-	match _type.as_str() {  
-		"NEGATION"   => Neg(&mut token_vec, &mut ast, root),
-		"BIT_COMPLE" => BitComple(&mut token_vec, &mut ast, root),
-		"LOGIC_NEG"  => LogicNeg(&mut token_vec, &mut ast, root),
-	}
-}
-
-
-fn Constant(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
-	let id = ast.len()-1;
-	ast[id]._type = String::from(token_vec[0]._type.clone());
-	ast[id]._value = String::from(token_vec[0]._value.clone());
-	token_vec.remove(0);
-}
+// 	match _type.as_str() {  
+// 		"NEGATION"   => Neg(&mut token_vec, &mut ast, root),
+// 		"BIT_COMPLE" => BitComple(&mut token_vec, &mut ast, root),
+// 		"LOGIC_NEG"  => LogicNeg(&mut token_vec, &mut ast, root),
+// 	}
+// }
 
 
-fn Neg(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
-	let id = ast.len()-1;
-
-	// remove "-" token
-	token_vec.remove(0);
-
-	// ensure next token is a constant
-	if token_vec[0]._type != "CONSTANT" { 
-		panic!("Parser exp_neg: token not constant.\nToken: {} {}", token_vec[0]._type, token_vec[0]._value);
-	}	
-
-	let val = -1 * token_vec[0]._value.parse()
-		.expect("Parser exp_neg: Unable to parse the constant");
-	ast[id]._type = String::from(token_vec[0]._type.clone());
-	ast[id]._value = String::from(val);
-	token_vec.remove(0);
-
-}
+// fn Constant(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
+// 	let id = ast.len()-1;
+// 	ast[id]._type = String::from(token_vec[0]._type.clone());
+// 	ast[id]._value = String::from(token_vec[0]._value.clone());
+// 	token_vec.remove(0);
+// }
 
 
-fn BitComple(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
+// fn Neg(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
+// 	let id = ast.len()-1;
 
-}
+// 	// remove "-" token
+// 	token_vec.remove(0);
+
+// 	// ensure next token is a constant
+// 	if token_vec[0]._type != "CONSTANT" { 
+// 		panic!("Parser expression_neg: token not constant.\nToken: {} {}", token_vec[0]._type, token_vec[0]._value);
+// 	}	
+
+// 	let val = -1 * token_vec[0]._value.parse()
+// 		.expressionect("Parser expression_neg: Unable to parse the constant");
+// 	ast[id]._type = String::from(token_vec[0]._type.clone());
+// 	ast[id]._value = String::from(val);
+// 	token_vec.remove(0);
+
+// }
 
 
-fn LogicNeg(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
+// fn BitComple(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
 
-}
+// }
+
+
+// fn LogicNeg(token_vec: &mut Vec<Token::Token>, ast: &mut Vec<Node::Node>, root: usize) {
+
+// }

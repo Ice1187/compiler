@@ -83,12 +83,12 @@ fn keysyb_check(syb: &str) -> &str {
 
 
 pub fn lex(path: &str) -> Vec<Token::Token> {
-    println!("");
-    println!("----------------");
-    println!("[+] Lexer:");
+    // println!("");
+    // println!("----------------");
+    // println!("[+] Lexer:");
 	
     // Open the source file
-    println!("[-] Source file: {}", &path);
+    // println!("[-] Source file: {}", &path);
     let file = File::open(&path).expect("\nLexer: Failed to open the source file\n");
 	let reader = BufReader::new(file);
 	
@@ -96,7 +96,7 @@ pub fn lex(path: &str) -> Vec<Token::Token> {
     let mut token_vec: Vec<Token::Token> = Vec::new();
 
     // Line number
-    let mut line_count = 1;
+    // let mut line_count = 1;
 
     // Lex the file line by line
     for line in reader.lines(){
@@ -104,14 +104,14 @@ pub fn lex(path: &str) -> Vec<Token::Token> {
         // Read line and trim
 		let mut text = line.expect("Lexer: Unable to read the line of the source file.")
                            .trim().to_string();
-    	println!("\nLine {}:", line_count);
+    	// println!("\nLine {}:", line_count);
 
         // Check first character to determine the match function
 	    let mut first: char;
         let mut token: Token::Token;
 	    while text.len()!=0 {
             // print to test
-            println!("\"{}\"", &text);
+            // println!("\"{}\"", &text);
 
 	        first = text.chars().nth(0)
                     .expect("Lexer: Unable to read the first character of the line");
@@ -130,7 +130,7 @@ pub fn lex(path: &str) -> Vec<Token::Token> {
 
             text = text.trim_start().to_string();
 	    }
-        line_count += 1;
+        // line_count += 1;
 	}
 	token_vec
 }

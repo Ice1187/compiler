@@ -54,30 +54,11 @@ pub mod Node {
 
 
 pub mod Pprint {
-	pub fn print_ast(ast: & Vec<crate::Node::Node>) {
-		let c = ast.len();
-		println!{"\n[-] AST: "};
-		for i in 0..c {
-			if ast[i]._level == "Program".to_string() {
-		    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
-			} else if ast[i]._level == "Function".to_string() {
-				 print!("  ");
-		    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
-			} else if ast[i]._level == "Statement".to_string() {
-				 print!("    ");
-		    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
-			} else if ast[i]._level == "Expression".to_string() {
-				 print!("      ");
-		    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
-			} else { println!("No Expression?");}
-	    }					
-	}
 
 	use std::io::{stdout, Write};
-	
 	pub fn print_token(token_vec: & Vec<crate::Token::Token>) {
 		let c = token_vec.len();
-		print!{"[-] Token: ["};
+		print!{"\n[-] Token: ["};
 		for i in 0..c {
 	    	print!("\"{}: {}\", ", token_vec[i]._type, token_vec[i]._value);
 			stdout().flush().unwrap();
@@ -86,14 +67,54 @@ pub mod Pprint {
 		stdout().flush().unwrap();
 	}
 
+	pub fn print_ast(ast: & Vec<crate::Node::Node>, verbose: i32) {
+		let c = ast.len();
+		println!{"\n[-] AST: "};
+		if verbose == 1 {
+			for i in 0..c {
+				if ast[i]._level == "Program".to_string() {
+			    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
+				} else if ast[i]._level == "Function".to_string() {
+					 print!("  ");
+			    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
+				} else if ast[i]._level == "Statement".to_string() {
+					 print!("    ");
+			    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
+				} else if ast[i]._level == "Expression".to_string() {
+					 print!("      ");
+			    	println!("{} {}: {:?}", i, ast[i]._level, ast[i].to);
+				} else { println!("No Expression?");}
+		    }
+		}
+		else if verbose == 2 {
+			for i in 0..c {
+				if ast[i]._level == "Program".to_string() {
+			    	println!("{} {}: {} -> {:?}", i, ast[i]._level, ast[i]._name, ast[i].to);
+				} else if ast[i]._level == "Function".to_string() {
+					 print!("  ");
+			    	println!("{} {}: {} {} -> {:?}", i, ast[i]._level, ast[i]._type, ast[i]._name, ast[i].to);
+				} else if ast[i]._level == "Statement".to_string() {
+					 print!("    ");
+			    	println!("{} {}: {} -> {:?}", i, ast[i]._level, ast[i]._name, ast[i].to);
+				} else if ast[i]._level == "Expression".to_string() {
+					 print!("      ");
+			    	println!("{} {}: {} {} -> {:?}", i, ast[i]._level, ast[i]._type, ast[i]._value, ast[i].to);
+				} else { println!("No Expression?");}
+		    }	
+		}
+	}
+
+
 	use std::fs::File;
 	use std::io::{BufRead, BufReader};
-
 	pub fn print_asm(filename: & String) {
 	    let file = File::open(&filename).expect("\nP asm: Failed to open the file\n");
 		let reader = BufReader::new(file);
+		println!("\n[-] Assembly:");
 		for line in reader.lines() {
 			println!("{}", line.expect("P asm: Failed to read the lines"));
 		}
 	}
+
+
 }
