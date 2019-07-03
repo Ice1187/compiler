@@ -1,0 +1,9 @@
+[package]
+name = "parser_lib"
+version = "0.1.0"
+authors = ["Ice1187 <Ice1187.0324@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+lib = { path = "../lib"}
+lexer_lib = { path = "../lexer_lib"}
