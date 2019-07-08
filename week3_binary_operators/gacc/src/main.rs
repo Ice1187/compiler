@@ -19,11 +19,15 @@ fn get_args() -> (String, String) {
 		stdin().read_line(&mut path).expect("Compiler: Invalid file name.");
 	}
 
-	// path = .c ; filename = .s
-	path = path.trim().to_string();
-	let filename = path.replace(".c", ".s");
+	let filename = c2s(path.clone());
 	(path, filename)
 
+}
+
+fn c2s(path: String) -> String {
+	// path = .c ; filename = .s
+	let filename = path.trim().to_string().replace(".c", ".s");
+	filename
 }
 
 
@@ -40,25 +44,27 @@ fn gcc(filename: & String) {
 
 
 fn main() {
-	let valid = vec!["../test/add.c", "../test/associativity_2.c", 
-	"../test/associativity.c", "../test/div.c", "../test/mult.c", 
-	"../test/parens.c", "../test/precedence.c", "../test/sub.c", 
-	"../test/sub_neg.c", "../test/unop_add.c", "../test/unop_parens.c"];
+	// let valid = vec!["../test/add.c", "../test/associativity_2.c", 
+	// "../test/associativity.c", "../test/div.c", "../test/mult.c", 
+	// "../test/parens.c", "../test/precedence.c", "../test/sub.c", 
+	// "../test/sub_neg.c", "../test/unop_add.c", "../test/unop_parens.c"];
 
-	// let (path, filename) = get_args();
+	let (path, filename) = get_args();
+	
+	// let mut filename: String;
+	// for path in valid {
+	// filename = c2s(path.to_string());
+	// Pprint::print_file(&path.to_string().clone());  	 
 
-	for path in valid {
-		Pprint::print_file(&path.to_string().clone());
+	let token_vec = lexer::lex(&path);	
+	// Pprint::print_token(&token_vec);
 
-		let token_vec = lexer::lex(&path);	
-		Pprint::print_token(&token_vec);
+	let ast = parser::parse(token_vec, &path);
+	// Pprint::print_ast(&ast, 0);
 
-		let ast = parser::parse(token_vec, &path);
-		Pprint::print_ast(&ast, 0);
+	gen::gen(&ast, &filename.to_string());
+	// Pprint::print_asm(&filename.to_string());
 
-		// gen::gen(&ast, &filename);
-		// Pprint::print_asm(&filename);
-
-		// gcc(&filename);
-	}
+	gcc(&filename);
+	// }
 }

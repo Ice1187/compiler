@@ -107,6 +107,7 @@ pub fn lex(path: &str) -> Vec<Token::Token> {
         // Read line and trim
 		let mut text = line.expect("Lexer: Unable to read the line of the source file.")
                            .trim().to_string();
+                           
     	// println!("\nLine {}:", line_count);
 
         // Check first character to determine the match function

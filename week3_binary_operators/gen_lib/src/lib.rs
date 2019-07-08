@@ -1,7 +1,6 @@
-use std::io::{Write};
+use std::io::Write;
 use std::fs::File;
-use lib::{Node};
-use parser_lib as parser;
+use lib::Node;
 use asm_lib as asm;
 
 // $ gcc -m32 -masm=intel main.s -o main
@@ -59,22 +58,19 @@ fn statement(ast: & Vec<Node::Node>, me: usize, from: usize, mut f: &mut File) {
 }
 
 fn Return(ast: & Vec<Node::Node>, me: usize, from: usize, mut f: &mut File) {
-	expression(&ast, ast[me].to[0], &mut f);
+	exp(&ast, ast[me].to[0], &mut f);
 	asm::ret(&mut f);
 
 }
 
-fn expression(ast: & Vec<Node::Node>, me: usize, mut f: &mut File){
+fn exp(ast: & Vec<Node::Node>, me: usize, mut f: &mut File){
 	match ast[me]._type.as_str() {
-		"CONSTANT"   => Constant(&ast, me, &mut f),
-		"NEGATION"   => Neg(&ast, me, &mut f),
-		"BIT_COMPLE" => BitComple(&ast, me, &mut f),
-		"LOGIC_NEG"   => LogicNeg(&ast, me, &mut f),
-		_ => panic!("Gen: Unrecoginized expression type.\nExp type: {} {} {}",
+		"CONSTANT"  => Constant(&ast, me, &mut f),
+		"UNARY_OP"  => UnOp(&ast, me, &mut f),
+		"BINARY_OP" => BinOp(&ast, me, &mut f),
+		_ => panic!("Gen: Unrecoginized exp type.\nExp type: {} {} {}",
 					ast[me]._level, ast[me]._type, ast[me]._value),
 	}
-
-	
 }
 
 fn Constant(ast: & Vec<Node::Node>, me: usize, mut f: &mut File) {
@@ -82,23 +78,34 @@ fn Constant(ast: & Vec<Node::Node>, me: usize, mut f: &mut File) {
 	asm::mov("eax", ret, &mut f);
 }
 
-fn Neg(ast: & Vec<Node::Node>, me: usize, mut f: &mut File) {
-	expression(&ast, ast[me].to[0], &mut f);
-	asm::neg("eax", &mut f);
+fn UnOp(ast: & Vec<Node::Node>, me: usize, mut f: &mut File) {
+	exp(&ast, ast[me].to[0], &mut f);
+	match ast[me]._value.as_str() {
+		"-" => asm::neg("eax", &mut f),
+		"~" => asm::not("eax", &mut f),
+		"!" => { asm::cmp("eax", "0", &mut f);
+				 asm::mov("eax", "0", &mut f);
+				 asm::sete("al", &mut f);    }
+		_ => panic!("Gen UnOp: Unrecoginized unary operator.\nUnOp type: {} {} {}",
+					ast[me]._level, ast[me]._type, ast[me]._value),
+	}
 }
 
-fn BitComple(ast: & Vec<Node::Node>, me: usize, mut f: &mut File) {
-	expression(&ast, ast[me].to[0], &mut f);
-	asm::not("eax", &mut f);
+fn BinOp(ast: & Vec<Node::Node>, me: usize, mut f: &mut File) {
+	exp(&ast, ast[me].to[0], &mut f);
+	asm::push("eax", &mut f);
+	exp(&ast, ast[me].to[1], &mut f);
+	asm::push("eax", &mut f);
+	asm::pop("ecx", &mut f);
+	asm::pop("eax", &mut f);
+	match ast[me]._value.as_str() {
+		"+" => asm::add("eax", "ecx", &mut f),
+		"-" => asm::sub("eax", "ecx", &mut f),
+		"*" => asm::imul("eax", "ecx", &mut f),
+		"/" => { asm::xor("edx", "edx", &mut f);
+				 asm::idiv("ecx", &mut f); }
+		_ => panic!("Gen UnOp: Unrecoginized unary operator.\nUnOp type: {} {} {}",
+					ast[me]._level, ast[me]._type, ast[me]._value),
+	}
 }
 
-
-// cmp eax(exp), 0  // return exp==0 ? 
-// sete eax 		 //     1 : 0
-
-fn LogicNeg(ast: & Vec<Node::Node>, me: usize, mut f: &mut File) {
-	expression(&ast, ast[me].to[0], &mut f);
-	asm::cmp("eax", "0", &mut f);
-	asm::mov("eax", "0", &mut f);
-	asm::sete("al", &mut f);
-}

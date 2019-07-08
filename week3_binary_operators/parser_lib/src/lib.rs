@@ -128,7 +128,7 @@ fn exp(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>) -> 
 
 	while token_vec[0]._type == "ADDITION"
 	|| token_vec[0]._type == "MINUS" {
-		let op = Token::Token { _type: token_vec[0]._type.clone(), _value: token_vec[0]._value.clone() };
+		let op = Token::Token { _type: "BINARY_OP".to_string(), _value: token_vec[0]._value.clone() };
 		token_vec.remove(0);
 
 		let right_child = term(&mut token_vec, &mut ast);
@@ -145,7 +145,7 @@ fn term(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>) ->
 
 	while token_vec[0]._type == "MULTIPLICATION"
 	|| token_vec[0]._type == "DIVISION" {
-		let op = Token::Token { _type: token_vec[0]._type.clone(), _value: token_vec[0]._value.clone() };
+		let op = Token::Token { _type: "BINARY_OP".to_string(), _value: token_vec[0]._value.clone() };
 		token_vec.remove(0);
 
 		let right_child = factor(&mut token_vec, &mut ast);
@@ -208,13 +208,14 @@ fn UnOp(mut token_vec: &mut Vec<Token::Token>, mut ast: &mut Vec<Node::Node>) ->
 	ast[id]._level = "Expression".to_string();
 
 	// modify minus to negation
-	if token_vec[0]._type == "MINUS" {
-		ast[id]._type = "NEGATION".to_string();
-	} 
+	// if token_vec[0]._type == "MINUS" {
+		// ast[id]._type = "NEGATION".to_string();
+	// } 
+	// else {
+		// ast[id]._type = token_vec[0]._type.clone();
+	// }
 
-	else {
-		ast[id]._type = token_vec[0]._type.clone();
-	}
+	ast[id]._type = "UNARY_OP".to_string();
 	ast[id]._value = token_vec[0]._value.clone();
 	token_vec.remove(0);
 
