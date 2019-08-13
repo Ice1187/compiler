@@ -1,0 +1,1 @@
+/root/github/compiler/week4_even_more_binary_operators/lexer_lib/target/debug/liblexer_lib.rlib: /root/github/compiler/week4_even_more_binary_operators/lexer_lib/src/lib.rs /root/github/compiler/week4_even_more_binary_operators/lib/src/lib.rs

@@ -1,0 +1,12 @@
+[package]
+name = "gacc"
+version = "0.1.0"
+authors = ["Ice1187 <Ice1187.0324@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+lexer_lib = { path = "../lexer_lib" }
+parser_lib = { path = "../parser_lib" }
+gen_lib = { path = "../gen_lib" }
+lib = { path = "../lib" }
+asm_lib = { path = "../asm_lib" }
