@@ -1,0 +1,1 @@
+/root/github/compiler/week4_even_more_binary_operators/gen_lib/target/debug/libgen_lib.rlib: /root/github/compiler/week4_even_more_binary_operators/asm_lib/src/lib.rs /root/github/compiler/week4_even_more_binary_operators/gen_lib/src/lib.rs /root/github/compiler/week4_even_more_binary_operators/lib/src/lib.rs
